@@ -11,6 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   smach
   message_generation
+     actionlib
+  actionlib_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -74,6 +76,7 @@ find_package(catkin REQUIRED COMPONENTS
    DEPENDENCIES
    geometry_msgs
    std_msgs
+
  )
 
 ###################################
@@ -88,7 +91,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES MotherBrain
-  CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs smach message_runtime
+  CATKIN_DEPENDS actionlib actionlib_msgs geometry_msgs roscpp rospy std_msgs smach message_runtime
   DEPENDS system_lib
 )
 

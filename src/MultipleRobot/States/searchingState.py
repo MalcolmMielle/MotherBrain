@@ -8,7 +8,7 @@ import smach_ros
 import sys
 
 import rospy
-from std_msgs.msg import String
+from std_msgs.msg import Bool
 from geometry_msgs.msg import PoseStamped
 from motherbrain.srv import *
 
@@ -27,6 +27,7 @@ class Search(smach.State):
 			self.pose_robot[i]=PoseStamped()
 			i +=1
 		self.all_search_complete=False
+
 	
 	def poseEqual(self, pose1, pose2):
 		if(pose1.position.x==pose2.position.x and pose1.position.y==pose2.position.y and pose1.position.z==pose2.position.z and pose1.orientation.x==pose2.orientation.x and pose1.orientation.y==pose2.orientation.y and pose1.orientation.z==pose2.orientation.z and pose1.orientation.w==pose2.orientation.w):

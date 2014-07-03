@@ -125,7 +125,7 @@ class Move(smach.State):
                      outcomes=['invalid', 'valid', 'preempted', 'valid_no_object'])
 		
 		self.mover=gm
-		self.pub_new=rospy.Publisher('pose_final', PoseStamped, queue_size=1)
+		#self.pub_new=rospy.Publisher('pose_final', PoseStamped, queue_size=1)
         
 	def execute(self, userdata):
 #		rospy.loginfo('Executing move robot state')
