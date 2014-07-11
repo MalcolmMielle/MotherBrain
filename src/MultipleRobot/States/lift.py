@@ -12,14 +12,18 @@ from motherbrain.srv import *
 
 #define state Lift
 class Lift(smach.State):
-	def __init__(self):
+	def __init__(self, nbRobot):
 		smach.State.__init__(self, outcomes=['valid','invalid','preempted','valid_unlift'],
-		input_keys=['flag'],
+		input_keys=['flag', 'nbRobot'],
 		output_keys=['end_object_flag'])
 		
 		rospy.loginfo('Waiting for the service in lift')
 		try:
-			rospy.wait_for_service('lifting_service')
+			i=0
+			while i<nbRobot:
+				name='robot'+str(i)+'/lifting_service'
+				rospy.wait_for_service(name)
+				i=i+1
 		except rospy.ServiceException, e:
 				print "Service call failed: %s"%e
 		self.serviceLift = rospy.ServiceProxy('lifting_service', lifting)

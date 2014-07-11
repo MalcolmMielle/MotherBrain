@@ -32,6 +32,7 @@ def main():
 	sm.userdata.sm_pose_goal = pose #Don't know how to declare a message...
 	sm.userdata.sm_object_flag = False
 	sm.userdata.sm_pose_base=pose_base
+	sm.userdata.nb_robot=2
 	# Open the container
 	with sm: 
 		# Add states to the container
@@ -40,7 +41,7 @@ def main():
 		                  
 		smach.StateMachine.add('Lift', Lift(), 
 		transitions={'invalid':'Lift_bug', 'valid':'Lift', 'preempted':'Lift_bug', 'valid_unlift' : 'Lift'}, 
-		remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag'})
+		remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag', 'nbRobot' : 'nb_robot'})
 		                  
 		                  
 		smach.StateMachine.add('Lift_bug', Lift_bug(), 
