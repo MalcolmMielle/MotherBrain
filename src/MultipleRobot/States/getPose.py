@@ -16,15 +16,15 @@ def getPositionUser_V2(msg, ud): #Userdata and message
 	
 	#We want a plane and orientation only around the z axis.
 	"""Quaternion : 
-	q[0]=cos(r/2)
-	q[1]=cos(r/2)*x
-	q[2]=cos(r/2)*y
-	q[3]=cos(r/2)*z
+	q[0]=cos(r/2) <-w
+	q[1]=cos(r/2)*x <-x
+	q[2]=cos(r/2)*y <-y
+	q[3]=cos(r/2)*z <-z different than in ROS...
 	
 	So we 0 out the y and x"""
 	#print str(ud.pose_user.position.x)
 	
-	if msg.position.z != 0.0 or msg.orientation.y != 0 or msg.orientation.z != 0:
+	if msg.position.z != 0.0 or msg.orientation.y != 0 or msg.orientation.x != 0:
 		print("It's not on the ground plane, the robot can't go there. Sorry, please give a new Pose")		
 		return 'preempted'
 	else:

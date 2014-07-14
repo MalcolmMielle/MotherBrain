@@ -69,7 +69,7 @@ def getPositionUser(ud, msg): #Userdata and message
 	So we 0 out the y and x"""
 	#print str(ud.pose_user.position.x)
 	
-	if msg.position.z != 0.0 or msg.orientation.y != 0 or msg.orientation.z != 0:
+	if msg.position.z != 0.0 or msg.orientation.y != 0 or msg.orientation.x != 0:
 		print("It's not on the ground plane, the robot can't go there. Sorry")		
 		return 'invalid'
 	else:
@@ -96,7 +96,7 @@ def getPositionUser_V2(msg, ud): #Userdata and message
 	So we 0 out the y and x"""
 	#print str(ud.pose_user.position.x)
 	
-	if msg.position.z != 0.0 or msg.orientation.y != 0 or msg.orientation.z != 0:
+	if msg.position.z != 0.0 or msg.orientation.y != 0 or msg.orientation.x != 0:
 		print("It's not on the ground plane, the robot can't go there. Sorry")		
 		return False
 	else:
