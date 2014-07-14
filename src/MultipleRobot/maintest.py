@@ -79,7 +79,7 @@ def main():
 #		transitions={'invalid':'End', 'valid':'Move', 'preempted':'Move', 'invalid' : 'Move', 'valid_no_object' : 'Move'}, 
 #		remapping={'move_pose_list':'sm_pose_base' , 'move_object_flag':'sm_object_flag'})
 
-		smach.StateMachine.add('Lift', Lift(), 
+		smach.StateMachine.add('Lift', Lift(2), 
 		                      transitions={'invalid':'Lift', 'valid':'getPose', 'preempted':'Lift', 'valid_unlift' : 'Back2Base'},
 		                      remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag'})
 		                      

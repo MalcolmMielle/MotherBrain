@@ -24,7 +24,7 @@ def main():
 	pose_base = PoseStamped()
 	pose_base.pose.position.x=1000
 	rospy.loginfo("Going in ;)")
-	mover=GoalMaker(True, 1) #set at true for testing !
+	#mover=GoalMaker(True, 1) #set at true for testing !
 	rospy.loginfo("DOne")
 	# Create a SMACH state machine
 	sm = smach.StateMachine(outcomes=['End'])
@@ -39,7 +39,7 @@ def main():
 		
 		                  
 		                  
-		smach.StateMachine.add('Lift', Lift(), 
+		smach.StateMachine.add('Lift', Lift(2), 
 		transitions={'invalid':'Lift_bug', 'valid':'Lift', 'preempted':'Lift_bug', 'valid_unlift' : 'Lift'}, 
 		remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag', 'nbRobot' : 'nb_robot'})
 		                  

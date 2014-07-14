@@ -65,38 +65,42 @@ def main():
 	with sm: 
 		# Add states to the container
 		
-		
+		#Send back the object to the base before launching the search
 		smach.StateMachine.add('Init',Move(mover), 
 		transitions={'invalid':'End', 'valid':'Search', 'preempted':'End', 'invalid' : 'End', 'valid_no_object' : 'CreateGoal'}, 
 		remapping={'move_pose_list':'sm_pose_base' , 'move_object_flag':'sm_object_flag'})
 		
-		
+		#Wait for object positions
 		smach.StateMachine.add('Search', Search(['robot1/sentobject','robot2/sentobject'], 2), 
 		transitions={'invalid':'Search', 'valid':'Move'}, 
 		remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag', 'pose' : 'sm_pose_goal', 'pose_end': 'sm_pose_goal'})
-		                  
+		  
+		#Move the robot to the specified goal
 		smach.StateMachine.add('Move',Move(mover), 
 		transitions={'invalid':'End', 'valid':'Lift', 'preempted':'End', 'invalid' : 'End', 'valid_no_object' : 'Lift'}, 
 		remapping={'move_pose_list':'sm_pose_goal' , 'move_object_flag':'sm_object_flag'})
-		
-#		smach.StateMachine.add('Moveb',Move(mover), 
-#		transitions={'invalid':'End', 'valid':'Move', 'preempted':'Move', 'invalid' : 'Move', 'valid_no_object' : 'Move'}, 
-#		remapping={'move_pose_list':'sm_pose_base' , 'move_object_flag':'sm_object_flag'})
 
-		smach.StateMachine.add('Lift', Lift(), transitions={'invalid':'Lift', 'valid':'getPose', 'preempted':'Lift', 'valid_unlift' : 'Back2Base'}, remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag'})
+		
+		#Lift or unlift the robot platform
+		smach.StateMachine.add('Lift', Lift(2), transitions={'invalid':'Lift', 'valid':'getPose', 'preempted':'Lift', 'valid_unlift' : 'Init'}, remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag'})
 	  
+		#Get pose from the user
 		smach.StateMachine.add('getPose', WaitForMsgState("/user_pose", Pose, getPositionUser_V2, ['pose_user', 'pose_iteration', 'nb_robot'], ['pose_user', 'pose_iteration']), 
 		transitions={'preempted' : 'getPose', 'aborted' : 'End', 'succeeded' : 'Move'},
 		remapping={'pose_user':'sm_pose_goal' , 'pose_iteration' : 'sm_iteration_get_pose', 'nb_robot' : 'nb_robot'})
 		
-		#Init should be suppress in some way so we only use Move...(or not?) Using init for testing purpose
+		#Input the base position in the goal position for the robot to go back to the base
 		smach.StateMachine.add('Back2Base', Back2Base(), 
 		transitions={'invalid':'Back2Base', 'valid':'Init', 'preempted':'Back2Base'}, 
 		remapping={'pose':'sm_pose_goal' , 'pose_base' : 'sm_pose_base'})
 
+		#State for testing (?) that input goals for the robot if we do no visual search
 		smach.StateMachine.add('CreateGoal', Back2Base(), 
 		transitions={'invalid':'Back2Base', 'valid':'Move', 'preempted':'Back2Base'}, 
-		remapping={'pose':'sm_pose_goal' , 'pose_base' : 'sm_pose_test'})                     
+		remapping={'pose':'sm_pose_goal' , 'pose_base' : 'sm_pose_test'})     
+		
+		#LIFT BUG IN TWO NODE
+		smach.StateMachine.add('Change_flag_lift', Change_variable(), transitions={'invalid':'Change_flag_lift', 'valid':'Lift', 'preempted':'Change_flag_lift'}, remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag'})
 		                  
 
 	# Create and start the introspection server
