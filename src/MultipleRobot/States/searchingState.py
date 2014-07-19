@@ -111,6 +111,7 @@ class Search(smach.State):
 			i +=1
 		self.nbRobot=ndRobot;
 		self.all_search_complete=False
+		self.pub = rospy.Publisher('search', Bool, queue_size=1)
 		
 		
 	def printPose(self):
@@ -127,17 +128,22 @@ class Search(smach.State):
 		rospy.loginfo('Executing state Searching for the target')
 		print '\n'+'SEARCH GIVE US ' + str(self.all_search_complete) +' and '+str(self.nbRobot)+ '\n'
 
+		if self.all_search_complete==False:
+			 pub.publish(True)
+		
 		self.printPose()
 		self.printFlags()
 		print 'Thus '+str(self.checkAllRobotFlag() )
 		
-		if self.isvalidTarget(self.pose_robot[0])==False:
-			print 'bouyaka '
+		#if self.isvalidTarget(self.pose_robot[0])==False:
+		#	print 'bouyaka '
 			#exit(0)
 		
 		
 		if self.all_search_complete==True:
 			#self.reinit()
+			pub.publish(False)
+			self.all_search_complete=False
 			return 'valid'
 		else:
 			return 'invalid'

@@ -91,7 +91,7 @@ def main():
 
 		#State for testing (?) that input goals for the robot if we do no visual search
 		smach.StateMachine.add('CreateGoal', Back2Base(), 
-		transitions={'invalid':'Back2Base', 'valid':'Move', 'preempted':'Back2Base'}, 
+		transitions={'invalid':'Init', 'valid':'Move', 'preempted':'Init'}, 
 		remapping={'pose':'sm_pose_goal' , 'pose_base' : 'sm_pose_test'})     
 		
 		#LIFT BUG IN TWO NODE
