@@ -111,7 +111,7 @@ class Search(smach.State):
 			i +=1
 		self.nbRobot=ndRobot;
 		self.all_search_complete=False
-		self.pub = rospy.Publisher('search', Bool, queue_size=1)
+		self.pub = rospy.Publisher('search_state', Bool, queue_size=1)
 		
 		
 	def printPose(self):
