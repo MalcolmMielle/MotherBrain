@@ -51,7 +51,7 @@ class Search(smach.State):
 	def check(self, rep):
 		print 'received'
 		#program cool stuff
-		#TODO multiple robot
+		#TODO Put the goal in the map frame !!!!!!
 
 		if(self.nbRobot==1):
 			self.pose_robot[0]=rep.pose
@@ -64,6 +64,7 @@ class Search(smach.State):
 			try:
 				if rep.robot_id<self.nbRobot and rep.robot_id>=0:
 					if self.isvalidTarget(rep.pose)==False :
+						print 'sammmmme'
 						return sentobjectResponse(True)
 					else :
 						self.pose_robot[rep.robot_id]=rep.pose #TODO
@@ -133,6 +134,8 @@ class Search(smach.State):
 		#if self.isvalidTarget(self.pose_robot[0])==False:
 		#	print 'bouyaka '
 			#exit(0)
+			
+		
 		
 		
 		if self.all_search_complete==True:
