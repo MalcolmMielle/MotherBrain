@@ -23,7 +23,7 @@ def main():
 	rospy.init_node('MotherBrain')
 	
 	pose = PoseStamped()
-	pose.pose.position.x=2
+	pose.pose.position.x=0
 	pose.pose.orientation.w=1
 	
 	pose2 = PoseStamped()
@@ -38,28 +38,28 @@ def main():
 	pose_base2.pose.orientation.w=1
 	
 	rospy.loginfo("Going in ;)")
-	mover=GoalMaker(False,2, 60) #set at true for testing !
+	mover=GoalMaker(False,1, 60) #set at true for testing !
 	rospy.loginfo("Done")
 	# Create a SMACH state machine
 	sm = smach.StateMachine(outcomes=['End'])
 	#sm.userdata.sm_counter = 0
 	sm.userdata.sm_pose_goal = list()
 	sm.userdata.sm_pose_goal.append(pose) #Don't know how to declare a message...
-	sm.userdata.sm_pose_goal.append(pose2) #Don't know how to declare a message...
+	#sm.userdata.sm_pose_goal.append(pose2) #Don't know how to declare a message...
 	
 	sm.userdata.sm_pose_test = list(sm.userdata.sm_pose_goal) #copy
 
 	sm.userdata.sm_object_flag = list()
 	sm.userdata.sm_object_flag.append(False)
-	sm.userdata.sm_object_flag.append(False)
+	#sm.userdata.sm_object_flag.append(False)
 	
 	sm.userdata.sm_pose_base=list()
 	sm.userdata.sm_pose_base.append(pose_base)
-	sm.userdata.sm_pose_base.append(pose_base2)
+	#sm.userdata.sm_pose_base.append(pose_base2)
 	
 	sm.userdata.sm_object_flag=False
 	sm.userdata.sm_iteration_get_pose=0
-	sm.userdata.nb_robot=2
+	sm.userdata.nb_robot=1
 	
 	# Open the container
 	with sm: 
@@ -71,7 +71,7 @@ def main():
 		remapping={'move_pose_list':'sm_pose_base' , 'move_object_flag':'sm_object_flag'})
 		
 		#Wait for object positions
-		smach.StateMachine.add('Search', Search(['robot1/sentobject','robot2/sentobject'], 2), 
+		smach.StateMachine.add('Search', Search(1), 
 		transitions={'invalid':'Search', 'valid':'Move'}, 
 		remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag', 'pose' : 'sm_pose_goal', 'pose_end': 'sm_pose_goal'})
 		  
@@ -82,7 +82,7 @@ def main():
 
 		
 		#Lift or unlift the robot platform
-		smach.StateMachine.add('Lift', Lift(2), transitions={'invalid':'Lift', 'valid':'getPose', 'preempted':'Lift', 'valid_unlift' : 'Init'}, remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag'})
+		smach.StateMachine.add('Lift', Lift(1), transitions={'invalid':'Lift', 'valid':'getPose', 'preempted':'Lift', 'valid_unlift' : 'Init'}, remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag'})
 	  
 		#Get pose from the user
 		smach.StateMachine.add('getPose', WaitForMsgState("/user_pose", Pose, getPositionUser_V2, ['pose_user', 'pose_iteration', 'nb_robot'], ['pose_user', 'pose_iteration']), 

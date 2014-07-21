@@ -22,8 +22,14 @@ class Lift(smach.State):
 		self.nbRobot=nbRobot
 		try:
 			i=0
-			while i<nbRobot:
-				name='robot'+str(i)+'/lifting_service'
+			if nbRobot>1:
+				while i<nbRobot:
+					name='robot'+str(i)+'/lifting_service'
+					rospy.wait_for_service(name)
+					i=i+1
+					self.serviceLift.append(rospy.ServiceProxy(name, lifting) )
+			else:
+				name='/lifting_service'
 				rospy.wait_for_service(name)
 				i=i+1
 				self.serviceLift.append(rospy.ServiceProxy(name, lifting) )

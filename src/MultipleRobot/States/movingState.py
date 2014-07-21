@@ -50,17 +50,26 @@ class GoalMaker(object):
 		self.time_to_obj=time
 		self.move_base = list()
 		i=0
-		while i < nbRobot:
-			name='robot'+str(i)+'/move_base'
-			print 'connecting to : ' + str(name)
-			self.move_base.append(actionlib.SimpleActionClient(name, MoveBaseAction))
+		if nbRobot>1:
+			while i < nbRobot:
+				name='robot'+str(i)+'/move_base'
+				print 'connecting to : ' + str(name)
+				self.move_base.append(actionlib.SimpleActionClient(name, MoveBaseAction))
+				if(test==False):
+					rospy.loginfo("Waiting for move_base action server...")
+					self.move_base[i].wait_for_server()
+					
+					rospy.loginfo("Connected to move base server")
+					rospy.loginfo("Starting navigation")
+				i=i+1
+		else:
+			self.move_base.append(actionlib.SimpleActionClient('/move_base', MoveBaseAction))
 			if(test==False):
 				rospy.loginfo("Waiting for move_base action server...")
 				self.move_base[i].wait_for_server()
 				
 				rospy.loginfo("Connected to move base server")
 				rospy.loginfo("Starting navigation")
-			i=i+1
 		rospy.loginfo("The end")
 		
 	

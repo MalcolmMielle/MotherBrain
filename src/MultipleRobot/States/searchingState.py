@@ -80,24 +80,19 @@ class Search(smach.State):
 			
 	
 	
-	def __init__(self, name, ndRobot):
+	def __init__(self, ndRobot):
 		smach.State.__init__(self, outcomes=['invalid', 'valid'],
 		input_keys=['end_object_flag', 'pose'],
 		output_keys=['flag', 'pose_end'])
 		
 		rospy.loginfo('Creating services client of search')
 		try:
-			if ndRobot>2:
-				raise Exception("To many robot")
 			if ndRobot<0:
 				raise Exception("Not enough Robots")
-			if len(name) != ndRobot:
-				raise Exception("Not the same number of robot and services")
 		except Exception, e:
 				print "Number of robot fail: %s"%e
 				print "going for the default value of 1 and service sentobject"
 				ndRobot=1
-				name=['sentobject']
 				
 		
 		self.service =rospy.Service('sentobject', sentobject, self.check)
@@ -129,7 +124,7 @@ class Search(smach.State):
 		print '\n'+'SEARCH GIVE US ' + str(self.all_search_complete) +' and '+str(self.nbRobot)+ '\n'
 
 		if self.all_search_complete==False:
-			 pub.publish(True)
+			 self.pub.publish(True)
 		
 		self.printPose()
 		self.printFlags()
@@ -142,8 +137,14 @@ class Search(smach.State):
 		
 		if self.all_search_complete==True:
 			#self.reinit()
-			pub.publish(False)
+			self.pub.publish(False)
 			self.all_search_complete=False
+			
+			print "this is the goal after search. Position : "+str(self.pose_robot[0].pose.position.x)+", "+str(self.pose_robot[0].pose.position.y)+", "+str(self.pose_robot[0].pose.position.z)+" Orientation : "+str(self.pose_robot[0].pose.orientation.x)+", "+str(self.pose_robot[0].pose.orientation.y)+", "+str(self.pose_robot[0].pose.orientation.z)+", "+str(self.pose_robot[0].pose.orientation.w)
+			print 
+			
+			
+			userdata.pose_end=self.pose_robot
 			return 'valid'
 		else:
 			return 'invalid'
