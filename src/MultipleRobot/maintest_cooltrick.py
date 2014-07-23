@@ -73,7 +73,7 @@ def main():
 		#Wait for object positions
 		smach.StateMachine.add('Search', Search(['robot1/sentobject','robot2/sentobject'], 2), 
 		transitions={'invalid':'Search', 'valid':'Move'}, 
-		remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag', 'pose' : 'sm_pose_goal', 'pose_end': 'sm_pose_goal'})
+		remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag', 'pose' : 'sm_pose_goal', 'pose_end': 'sm_pose_goal', 'radius_object' : 'radius_object'})
 		  
 		#Move the robot to the specified goal
 		smach.StateMachine.add('Move',Move(mover), 

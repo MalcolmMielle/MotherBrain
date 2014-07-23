@@ -14,14 +14,15 @@ from itertools import *
 
 
 def printPoseStamped(elm):
-	print " Position : "+str(elm.pose.position.x)+", "+str(elm.pose.position.y)+", "+str(elm.pose.position.z)+" Orientation : "+str(elm.pose.orientation.x)+", "+str(elm.pose.orientation.y)+", "+str(elm.pose.orientation.z)+", "+str(elm.pose.orientation.w)
+	print " Position in frame "+str(elm.header.frame_id)+" : "+str(elm.pose.position.x)+", "+str(elm.pose.position.y)+", "+str(elm.pose.position.z)+" Orientation : "+str(elm.pose.orientation.x)+", "+str(elm.pose.orientation.y)+", "+str(elm.pose.orientation.z)+", "+str(elm.pose.orientation.w)
 	print 
 
 	
 #Goalmove base and PoseStamped
 def copyGoal(goal, posee):
 	# Use the map frame to define goal poses
-	goal.target_pose.header.frame_id = 'map'
+	
+	goal.target_pose.header.frame_id = posee.header.frame_id
 
 	# Set the time stamp to "now"
 	goal.target_pose.header.stamp = rospy.Time.now()
@@ -90,7 +91,7 @@ class GoalMaker(object):
 					copyGoal(goal, elm_pose)
 					
 					print 'we have move_base : ' + str(elm_goal)
-					print "this is the goal. Position : "+str(goal.target_pose.pose.position.x)+", "+str(goal.target_pose.pose.position.y)+", "+str(goal.target_pose.pose.position.z)+" Orientation : "+str(goal.target_pose.pose.orientation.x)+", "+str(goal.target_pose.pose.orientation.y)+", "+str(goal.target_pose.pose.orientation.z)+", "+str(goal.target_pose.pose.orientation.w)
+					print "this is the goal in frame " + str(goal.target_pose.header.frame_id)+" Position : "+str(goal.target_pose.pose.position.x)+", "+str(goal.target_pose.pose.position.y)+", "+str(goal.target_pose.pose.position.z)+" Orientation : "+str(goal.target_pose.pose.orientation.x)+", "+str(goal.target_pose.pose.orientation.y)+", "+str(goal.target_pose.pose.orientation.z)+", "+str(goal.target_pose.pose.orientation.w)
 					print 
 					
 					# Send the goal pose to the MoveBaseAction server

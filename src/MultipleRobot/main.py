@@ -60,6 +60,7 @@ def main():
 	sm.userdata.sm_object_flag=False
 	sm.userdata.sm_iteration_get_pose=0
 	sm.userdata.nb_robot=2
+	sm.userdata.stack=Stack(0.5, 0.5)
 	
 	# Open the container
 	with sm: 
@@ -71,13 +72,13 @@ def main():
 		remapping={'move_pose_list':'sm_pose_base' , 'move_object_flag':'sm_object_flag'})
 		
 		#Wait for object positions
-		smach.StateMachine.add('Search', Search(2), 
+		smach.StateMachine.add('Search', Search(2, sm.userdata.stack), 
 		transitions={'invalid':'Search', 'valid':'Move'}, 
-		remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag', 'pose' : 'sm_pose_goal', 'pose_end': 'sm_pose_goal'})
+		remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag', 'pose' : 'sm_pose_goal', 'pose_end': 'sm_pose_goal', 'stack' : 'stack'})
 		  
 		#Move the robot to the specified goal
 		smach.StateMachine.add('Move',Move(mover), 
-		transitions={'invalid':'End', 'valid':'Lift', 'preempted':'End', 'invalid' : 'End', 'valid_no_object' : 'Lift'}, 
+		transitions={'invalid':'Change_flag_lift', 'valid':'Lift', 'preempted':'Change_flag_lift', 'valid_no_object' : 'Lift'}, 
 		remapping={'move_pose_list':'sm_pose_goal' , 'move_object_flag':'sm_object_flag'})
 
 		
