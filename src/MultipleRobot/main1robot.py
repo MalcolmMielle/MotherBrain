@@ -32,7 +32,9 @@ def main():
 	pose2.pose.orientation.w=1
 	
 	pose_base = PoseStamped()
+	pose_base.header.frame_id="map"
 	pose_base2 = PoseStamped()
+	pose_base2.header.frame_id="map"
 	pose_base2.pose.position.y=2
 	pose_base.pose.orientation.w=1
 	pose_base2.pose.orientation.w=1
@@ -60,6 +62,7 @@ def main():
 	sm.userdata.sm_object_flag=False
 	sm.userdata.sm_iteration_get_pose=0
 	sm.userdata.nb_robot=1
+	sm.userdata.stack=Stack(0.5, 0.5)
 	
 	# Open the container
 	with sm: 
@@ -71,13 +74,13 @@ def main():
 		remapping={'move_pose_list':'sm_pose_base' , 'move_object_flag':'sm_object_flag'})
 		
 		#Wait for object positions
-		smach.StateMachine.add('Search', Search(1), 
+		smach.StateMachine.add('Search', Search(1, sm.userdata.stack), 
 		transitions={'invalid':'Search', 'valid':'Move'}, 
-		remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag', 'pose' : 'sm_pose_goal', 'pose_end': 'sm_pose_goal'})
+		remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag', 'pose' : 'sm_pose_goal', 'pose_end': 'sm_pose_goal', 'stack' : 'stack'})
 		  
 		#Move the robot to the specified goal
 		smach.StateMachine.add('Move',Move(mover), 
-		transitions={'invalid':'End', 'valid':'Lift', 'preempted':'End', 'invalid' : 'End', 'valid_no_object' : 'Lift'}, 
+		transitions={'invalid':'Change_flag_lift', 'valid':'Lift', 'preempted':'Change_flag_lift', 'valid_no_object' : 'Lift'}, 
 		remapping={'move_pose_list':'sm_pose_goal' , 'move_object_flag':'sm_object_flag'})
 
 		
@@ -87,7 +90,7 @@ def main():
 		#Get pose from the user
 		smach.StateMachine.add('getPose', WaitForMsgState("/user_pose", Pose, getPositionUser_V2, ['pose_user', 'pose_iteration', 'nb_robot'], ['pose_user', 'pose_iteration']), 
 		transitions={'preempted' : 'getPose', 'aborted' : 'End', 'succeeded' : 'Move'},
-		remapping={'pose_user':'sm_pose_goal' , 'pose_iteration' : 'sm_iteration_get_pose', 'nb_robot' : 'nb_robot'})
+		remapping={'pose_user':'sm_pose_goal' , 'pose_iteration' : 'sm_iteration_get_pose', 'nb_robot' : 'nb_robot', 'stack' : 'stack'})
 
 		#State for testing (?) that input goals for the robot if we do no visual search
 		smach.StateMachine.add('CreateGoal', Back2Base(), 

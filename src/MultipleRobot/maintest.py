@@ -60,6 +60,7 @@ def main():
 	sm.userdata.sm_object_flag=False
 	sm.userdata.sm_iteration_get_pose=0
 	sm.userdata.nb_robot=2
+	sm.userdata.stack=Stack(0.5, 0.5)
 	
 	# Open the container
 	with sm: 

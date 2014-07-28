@@ -21,16 +21,22 @@ def main():
 	rospy.init_node('MotherBrain')
 	
 	pose = PoseStamped()
-	pose.pose.position.x=2
+	pose.header.frame_id="/map"
+	pose.pose.position.x=1
 	pose.pose.orientation.w=1
 	
 	pose2 = PoseStamped()
-	pose2.pose.position.x=2
+	pose2.header.frame_id="/map"
+	pose2.pose.position.x=1
 	pose2.pose.position.y=2
 	pose2.pose.orientation.w=1
 	
 	pose_base = PoseStamped()
+	pose_base.header.frame_id="/map"
 	pose_base2 = PoseStamped()
+	pose_base2.header.frame_id="/map"
+	pose_base.pose.position.x=-1
+	pose_base2.pose.position.x=-1
 	pose_base2.pose.position.y=2
 	pose_base.pose.orientation.w=1
 	pose_base2.pose.orientation.w=1

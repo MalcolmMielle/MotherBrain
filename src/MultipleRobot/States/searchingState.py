@@ -11,11 +11,34 @@ import rospy
 from std_msgs.msg import Bool
 from geometry_msgs.msg import PoseStamped
 from motherbrain.srv import *
+import tf
 
 """class ServiceVisu(object):
 	def __init__(self, name):
 		self.serviceGotObject = rospy.ServiceProxy(name, getobject)
 """
+
+def poseEqual(pose1, pose2):
+	if(pose1.position.x==pose2.position.x and pose1.position.y==pose2.position.y and pose1.position.z==pose2.position.z and pose1.orientation.x==pose2.orientation.x and pose1.orientation.y==pose2.orientation.y and pose1.orientation.z==pose2.orientation.z and pose1.orientation.w==pose2.orientation.w):
+		return True
+	else:
+		return False
+		
+def iscolliding(pose1, pose2, box):
+	if (pose2.position.x >= pose1.position.x + (box.width/2) ) or (pose2.position.x + (box.width/2) <= pose1.position.x) or (pose2.position.y >= pose1.position.y + (box.heigh/2)) or (pose2.position.y + (box.heigh/2) <= pose1.position.y):
+		return False
+	else:
+		return True 
+
+
+
+
+class Stack(object):
+	def __init__(self, h, w):
+		self.heigh=h
+		self.width=w
+
+
 
 # define state Foo
 class Search(smach.State):
@@ -29,11 +52,7 @@ class Search(smach.State):
 		self.all_search_complete=False
 
 	
-	def poseEqual(self, pose1, pose2):
-		if(pose1.position.x==pose2.position.x and pose1.position.y==pose2.position.y and pose1.position.z==pose2.position.z and pose1.orientation.x==pose2.orientation.x and pose1.orientation.y==pose2.orientation.y and pose1.orientation.z==pose2.orientation.z and pose1.orientation.w==pose2.orientation.w):
-			return True
-		else:
-			return False
+
 			
 	def checkAllRobotFlag(self):
 		for elm in self.flagrobot:
@@ -44,7 +63,10 @@ class Search(smach.State):
 	def isvalidTarget(self, pose):
 		#TODO
 		for elm in self.pose_robot:
-			if self.poseEqual(elm.pose, pose.pose):
+			#if poseEqual(elm.pose, pose.pose):
+			#	return False
+			#better test. If it collide with an object then we suppose they are the same.
+			if iscolliding(elm.pose, pose.pose, self.stack):
 				return False
 		return True
 	
@@ -52,6 +74,15 @@ class Search(smach.State):
 		print 'received'
 		#program cool stuff
 		#TODO Put the goal in the map frame !!!!!!
+		
+		try:
+			now = rospy.Time.now()
+			self.listener.waitForTransform('/map', rep.pose.header.frame_id, now, rospy.Duration(1))
+			#(trans,rot) = self.listener.lookupTransform(rep.pose.header.frame_id, '/map', rospy.Time(0))
+			rep.pose=self.listener.transformPose('/map', rep.pose)
+		except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException), e:
+			print "Transform fail: %s  "%e
+	
 
 		if(self.nbRobot==1):
 			self.pose_robot[0]=rep.pose
@@ -81,9 +112,9 @@ class Search(smach.State):
 			
 	
 	
-	def __init__(self, ndRobot):
+	def __init__(self, ndRobot, stack):
 		smach.State.__init__(self, outcomes=['invalid', 'valid'],
-		input_keys=['end_object_flag', 'pose'],
+		input_keys=['end_object_flag', 'pose', 'stack'],
 		output_keys=['flag', 'pose_end'])
 		
 		rospy.loginfo('Creating services client of search')
@@ -108,6 +139,8 @@ class Search(smach.State):
 		self.nbRobot=ndRobot;
 		self.all_search_complete=False
 		self.pub = rospy.Publisher('search_state', Bool, queue_size=1)
+		self.stack=stack
+		self.listener = tf.TransformListener()
 		
 		
 	def printPose(self):
@@ -131,19 +164,13 @@ class Search(smach.State):
 		self.printFlags()
 		print 'Thus '+str(self.checkAllRobotFlag() )
 		
-		#if self.isvalidTarget(self.pose_robot[0])==False:
-		#	print 'bouyaka '
-			#exit(0)
-			
-		
-		
 		
 		if self.all_search_complete==True:
 			#self.reinit()
 			self.pub.publish(False)
 			self.all_search_complete=False
 			
-			print "this is the goal after search. Position : "+str(self.pose_robot[0].pose.position.x)+", "+str(self.pose_robot[0].pose.position.y)+", "+str(self.pose_robot[0].pose.position.z)+" Orientation : "+str(self.pose_robot[0].pose.orientation.x)+", "+str(self.pose_robot[0].pose.orientation.y)+", "+str(self.pose_robot[0].pose.orientation.z)+", "+str(self.pose_robot[0].pose.orientation.w)
+			print "this is the goal in frame " +str(self.pose_robot[0].header.frame_id) +" after search. Position : "+str(self.pose_robot[0].pose.position.x)+", "+str(self.pose_robot[0].pose.position.y)+", "+str(self.pose_robot[0].pose.position.z)+" Orientation : "+str(self.pose_robot[0].pose.orientation.x)+", "+str(self.pose_robot[0].pose.orientation.y)+", "+str(self.pose_robot[0].pose.orientation.z)+", "+str(self.pose_robot[0].pose.orientation.w)
 			print 
 			
 			
