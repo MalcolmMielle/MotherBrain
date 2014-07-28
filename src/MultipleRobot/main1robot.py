@@ -90,7 +90,7 @@ def main():
 		#Get pose from the user
 		smach.StateMachine.add('getPose', WaitForMsgState("/user_pose", Pose, getPositionUser_V2, ['pose_user', 'pose_iteration', 'nb_robot'], ['pose_user', 'pose_iteration']), 
 		transitions={'preempted' : 'getPose', 'aborted' : 'End', 'succeeded' : 'Move'},
-		remapping={'pose_user':'sm_pose_goal' , 'pose_iteration' : 'sm_iteration_get_pose', 'nb_robot' : 'nb_robot'})
+		remapping={'pose_user':'sm_pose_goal' , 'pose_iteration' : 'sm_iteration_get_pose', 'nb_robot' : 'nb_robot', 'stack' : 'stack'})
 
 		#State for testing (?) that input goals for the robot if we do no visual search
 		smach.StateMachine.add('CreateGoal', Back2Base(), 

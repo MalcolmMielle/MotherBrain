@@ -4,6 +4,7 @@ import roslib
 import rospy
 import smach
 import smach_ros
+from searchingState import *
 
 import threading
 
@@ -29,10 +30,15 @@ def getPositionUser_V2(msg, ud): #Userdata and message
 		return 'preempted'
 	else:
 		print("Good target")
+		flag = True;
 		#return the position
-		ud.pose_user[ud.pose_iteration].pose=msg
-		ud.pose_iteration=ud.pose_iteration+1
-		if ud.pose_iteration==ud.nb_robot:
-			ud.pose_iteration=0
-			return 'succeeded'
+		for elm in ud.pose_user:
+			if iscolliding(elm.pose, msg, ud.stack):
+				flag=False
+		if flag== True:
+			ud.pose_user[ud.pose_iteration].pose=msg
+			ud.pose_iteration=ud.pose_iteration+1
+			if ud.pose_iteration==ud.nb_robot:
+				ud.pose_iteration=0
+				return 'succeeded'
 		return 'preempted'

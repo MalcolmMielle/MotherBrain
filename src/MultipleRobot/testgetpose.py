@@ -78,6 +78,7 @@ def main():
 	
 	sm.userdata.sm_iteration_get_pose=0
 	sm.userdata.nb_robot=2
+	sm.userdata.stack=Stack(0.5, 0.5)
 
 	# Open the container
 	with sm:
@@ -86,9 +87,10 @@ def main():
 		#smach.StateMachine.add('MoveUser', MonitorState2("/user_pose", Pose, getPositionUser) , transitions={'invalid':'MoveUser', 'valid':'End', 'preempted':'MoveUser'}, remapping={'pose_user':'sm_pose'})
 		
 		#Preempted used has you must ask more position from user
-		smach.StateMachine.add('MoveUser2', WaitForMsgState("/user_pose", Pose, getPositionUser_V2, ['pose_user', 'pose_iteration', 'nb_robot'], ['pose_user', 'pose_iteration']), 
-		transitions={'preempted' : 'MoveUser2', 'aborted' : 'End', 'succeeded' : 'End'},
-		remapping={'pose_user':'sm_pose_goal' , 'pose_iteration' : 'sm_iteration_get_pose', 'nb_robot' : 'nb_robot'})
+		#Get pose from the user
+		smach.StateMachine.add('getPose', WaitForMsgState("/user_pose", Pose, getPositionUser_V2, ['pose_user', 'pose_iteration', 'nb_robot', 'stack'], ['pose_user', 'pose_iteration']), 
+		transitions={'preempted' : 'getPose', 'aborted' : 'getPose', 'succeeded' : 'End'},
+		remapping={'pose_user':'sm_pose_goal' , 'pose_iteration' : 'sm_iteration_get_pose', 'nb_robot' : 'nb_robot', 'stack' : 'stack'})
 		# msg_cb=None, output_keys=None, latch=False, timeout=None)
 		                       
 
