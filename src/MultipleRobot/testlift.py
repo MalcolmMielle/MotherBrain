@@ -31,9 +31,7 @@ def main():
 	with sm:
 		# Add states to the container
 		
-		smach.StateMachine.add('Lift', Lift(), 
-		                      transitions={'invalid':'Lift', 'valid':'Lift', 'preempted':'Lift', 'valid_unlift' : 'Lift'},
-		                      remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag'})
+		smach.StateMachine.add('Lift', Lift(1), transitions={'invalid':'Lift', 'valid':'Lift', 'preempted':'Lift', 'valid_unlift' : 'Lift'}, remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag'})
 		                       
 
 	# Create and start the introspection server
