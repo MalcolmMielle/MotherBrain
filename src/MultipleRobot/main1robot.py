@@ -88,8 +88,8 @@ def main():
 		smach.StateMachine.add('Lift', Lift(1), transitions={'invalid':'Lift', 'valid':'getPose', 'preempted':'Lift', 'valid_unlift' : 'Init'}, remapping={'flag' : 'sm_object_flag', 'end_object_flag':'sm_object_flag'})
 	  
 		#Get pose from the user
-		smach.StateMachine.add('getPose', WaitForMsgState("/user_pose", Pose, getPositionUser_V2, ['pose_user', 'pose_iteration', 'nb_robot'], ['pose_user', 'pose_iteration']), 
-		transitions={'preempted' : 'getPose', 'aborted' : 'End', 'succeeded' : 'Move'},
+		smach.StateMachine.add('getPose', WaitForMsgState("/user_pose", Pose, getPositionUser_V2, ['pose_user', 'pose_iteration', 'nb_robot', 'stack'], ['pose_user', 'pose_iteration']), 
+		transitions={'preempted' : 'getPose', 'aborted' : 'Change_flag_lift', 'succeeded' : 'Move'},
 		remapping={'pose_user':'sm_pose_goal' , 'pose_iteration' : 'sm_iteration_get_pose', 'nb_robot' : 'nb_robot', 'stack' : 'stack'})
 
 		#State for testing (?) that input goals for the robot if we do no visual search
